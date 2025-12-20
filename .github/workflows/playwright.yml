@@ -30,7 +30,7 @@ jobs:
         run: |
           REPORT_DIR='run-${{ github.run_id }}-${{ github.run_attempt }}'
           azcopy cp --recursive "./playwright-report/*" "https://zaffreetestreport.blob.core.windows.net/\$web/run-20401142249-1"
-          echo "::notice title=HTML report url::https://zaffreetestreport.z1.web.core.windows.net/run-20401142249-1/index.html"
+          echo "::notice title=HTML report url::https://zaffreetestreport.z13.web.core.windows.net/run-20401142249-1/index.html"
         env:
           AZCOPY_AUTO_LOGIN_TYPE: SPN
           AZCOPY_SPA_APPLICATION_ID: "${{ secrets.AZCOPY_SPA_APPLICATION_ID }}"
