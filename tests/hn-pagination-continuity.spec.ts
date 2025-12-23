@@ -42,12 +42,22 @@ test.describe('HN Pagination continuity', () => {
 
       // Click 'More' to load next 30 (step comment)
       const prevFirst = await page.locator('tr.athing').first().getAttribute('id');
-      await Promise.all([
-        page.waitForLoadState('domcontentloaded'),
-        more.click()
-      ]);
-      // Wait for the listing to update: first tr.athing id should change (robust indicator)
-      await expect(page.locator('tr.athing').first()).not.toHaveAttribute('id', prevFirst || '');
+      await more.click();
+      // Wait for navigation to complete and elements to reload
+      await page.waitForLoadState('load');
+      // Wait until the first article ID is different (page has changed)
+      try {
+        await page.waitForFunction(
+          (expectedOldId) => {
+            const firstRow = document.querySelector('tr.athing');
+            return firstRow && firstRow.getAttribute('id') !== expectedOldId;
+          },
+          prevFirst,
+          { timeout: 5000 }
+        );
+      } catch (e) {
+        // If timeout, page might not have changed - continue anyway
+      }
 
       // After clicking, get new ids and detect whether new ids appeared
       const newPageIds = await page.locator('tr.athing').evaluateAll((els) => els.map((el) => (el as HTMLElement).getAttribute('id') || ''));

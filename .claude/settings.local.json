@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(curl:*)",
-      "Bash(npx playwright test)"
+      "Bash(npx playwright test)",
+      "Bash(npx playwright test --reporter=line --workers=1)",
+      "Bash(npx playwright test:*)"
     ]
   }
 }
