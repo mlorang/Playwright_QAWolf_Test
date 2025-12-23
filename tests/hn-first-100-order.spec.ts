@@ -1,6 +1,5 @@
 // spec: specs/indexjs-first-100-order.plan.md
 // seed: tests/seed.spec.ts
-// @ts-check
 
 import { test, expect } from '@playwright/test';
 
@@ -47,7 +46,10 @@ test.describe('Hacker News /newest — First 100 ordering', () => {
       if (!(await more.isVisible())) break;
 
       const prevFirst = await page.locator('tr.athing').first().getAttribute('id');
-      await more.click();
+      await Promise.all([
+        page.waitForLoadState('domcontentloaded'),
+        more.click()
+      ]);
       await expect(page.locator('tr.athing').first()).not.toHaveAttribute('id', prevFirst || '');
 
       // detect if this More click brought nothing new (page exhaustion scenario)

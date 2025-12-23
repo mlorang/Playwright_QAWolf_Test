@@ -42,7 +42,10 @@ test.describe('HN Pagination continuity', () => {
 
       // Click 'More' to load next 30 (step comment)
       const prevFirst = await page.locator('tr.athing').first().getAttribute('id');
-      await more.click();
+      await Promise.all([
+        page.waitForLoadState('domcontentloaded'),
+        more.click()
+      ]);
       // Wait for the listing to update: first tr.athing id should change (robust indicator)
       await expect(page.locator('tr.athing').first()).not.toHaveAttribute('id', prevFirst || '');
 
