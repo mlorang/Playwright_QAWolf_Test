@@ -26,17 +26,25 @@ test.describe('HN Pagination continuity', () => {
     // Collector loop: click visible "More" and gather until 100 unique ids are collected
     // 2. Collect unique article ids by repeatedly: evaluate visible `tr.athing` ids in page order,
     //    click the visible `More` link, wait for DOM update; continue until 100 unique ids are collected or `More` disappears.
+    console.log('\n=== COLLECTING UNIQUE IDS ===');
     let exhaustionAttempts = 0;
+    let pageNum = 1;
     while (collected.length < 100) {
       // Extract current page ids (step comment)
       // Extract the tr.athing ids from the current page
       const pageIds = await page.locator('tr.athing').evaluateAll((els) => els.map((el) => (el as HTMLElement).getAttribute('id') || ''));
+      const beforeCount = collected.length;
       appendUnseen(pageIds);
+      const newCount = collected.length - beforeCount;
+      const duplicates = pageIds.length - newCount;
+      console.log(`Page ${pageNum}: Found ${pageIds.length} articles, ${newCount} new, ${duplicates} duplicates. Total: ${collected.length}/100`);
+      pageNum++;
       if (collected.length >= 100) break;
 
       const more = page.getByRole('link', { name: 'More', exact: true });
       if (!(await more.isVisible())) {
         // No More link → page exhaustion
+        console.log('⚠️  No "More" link found - page exhausted');
         break;
       }
 
@@ -78,6 +86,13 @@ test.describe('HN Pagination continuity', () => {
 
     // 4. After collection, assert that exactly 100 unique ids were collected. If fewer, capture diagnostics: DOM snippets, last visible ids, and reason for exhaustion.
     // Verification
+    console.log('\n=== VERIFICATION ===');
+    if (collected.length === 100) {
+      console.log(`✓ Successfully collected 100 unique article IDs`);
+      console.log(`\nTest completed successfully!`);
+    } else {
+      console.log(`✗ Only collected ${collected.length} unique IDs (expected 100)`);
+    }
     expect(collected.length, `expected 100 unique ids, got ${collected.length}`).toBe(100);
   });
 });
