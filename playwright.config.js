@@ -23,6 +23,8 @@ module.exports = defineConfig({
     trace: isCI ? 'on-first-retry' : 'off',
     screenshot: isCI ? 'only-on-failure' : 'off',
     video: 'off',
+    // Add a small action timeout for stability
+    actionTimeout: 10000,
   },
 
   // Single browser on purpose (external live site)
