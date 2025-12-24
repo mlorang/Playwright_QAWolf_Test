@@ -134,3 +134,133 @@ npx playwright test --trace on --reporter=html
 ---
 
 **Next Session:** Continue from where we left off, referencing this logbook for context.
+
+---
+
+## Session 2: 2025-12-23 @ 8:15 PM
+
+**Duration:** ~15 minutes
+**Project:** QA Wolf Take-Home - Test 1.6 API Fallback Implementation
+
+---
+
+### Tasks Completed
+
+- **Created comprehensive API fallback test** (`tests/hn-api-fallback.spec.ts`)
+  - Implements dual-source timestamp collection (DOM `.age[title]` + HN API)
+  - Fetches missing timestamps from `https://hacker-news.firebaseio.com/v0/item/<id>.json`
+  - Converts API epoch seconds (`time` field) to JavaScript Date objects
+  - Calculates and reports DOM coverage vs. final coverage after API fallback
+  - Tracks timestamp source (DOM/API) for each article in diagnostics
+  - Validates newest→oldest ordering with combined timestamp dataset
+  - Requires ≥70% final timestamp coverage for deterministic validation
+
+- **Added API reliability test**
+  - Tests graceful handling of API failures and rate limiting
+  - Validates API accessibility with smaller dataset (10 articles)
+  - Logs success rates and failure diagnostics
+  - Ensures test doesn't crash on API errors
+
+- **Minor documentation formatting update**
+  - Reformatted `specs/indexjs-first-100-order.plan.md` for better readability
+  - Improved markdown list formatting consistency across all test sections
+
+---
+
+### Files Modified
+
+```
+tests/hn-api-fallback.spec.ts              (created, 321 lines)
+specs/indexjs-first-100-order.plan.md      (formatting updates)
+AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
+```
+
+---
+
+### Test Suite Status
+
+**Total:** 8 tests (added 1 new test file with 2 test cases)
+**Passing:** Expected 7/8 (new test not yet run)
+
+**Coverage by Test Plan:**
+- ✅ 1.1 Happy path
+- ✅ 1.2 Pagination continuity
+- ⏭️ 1.3 Missing timestamps (skipped)
+- ✅ 1.4 Malformed timestamps
+- ✅ 1.5 Dynamic insertions
+- ✅ 1.6 API fallback (newly created - comprehensive implementation)
+- ⬜ 1.7 Reachability test (not yet created)
+
+---
+
+### Technical Decisions
+
+- **Dual-source timestamp strategy**
+  - Primary: DOM `.age[title]` attribute (fast, no API calls)
+  - Fallback: HN API `/v0/item/<id>.json` for missing timestamps
+  - Tracks source for each timestamp to aid debugging
+
+- **API error handling**
+  - Continue execution on individual API failures
+  - Log all API diagnostics (success/failure, HTTP status, error messages)
+  - Attach comprehensive JSON diagnostics to test reports
+
+- **Coverage thresholds**
+  - Require ≥70% final coverage for ordering validation
+  - Report both initial DOM coverage and post-fallback coverage
+  - Allow graceful degradation if API is unavailable
+
+- **Diagnostic attachments**
+  - `api-diagnostics.json`: API call results, coverage stats, ordering violations
+  - `collected-articles.json`: Complete dataset with all article metadata and timestamp sources
+
+---
+
+### Key Features of New Test
+
+**Main API Fallback Test:**
+1. Collects 100 unique articles with pagination
+2. Extracts DOM timestamps from `.age[title]`
+3. Identifies articles with missing timestamps
+4. Fetches missing timestamps from HN API
+5. Merges DOM + API timestamps into unified dataset
+6. Validates newest→oldest ordering
+7. Generates detailed diagnostics with coverage analysis
+
+**API Reliability Test:**
+1. Tests smaller dataset (10 articles) for faster execution
+2. Simulates scenario where all DOM timestamps are missing
+3. Validates API accessibility and response format
+4. Measures API success rate
+5. Ensures graceful failure handling
+
+---
+
+### Future Improvements
+
+- [ ] Run new test to verify it passes
+- [ ] Add 1.7 Reachability test to complete test plan coverage
+- [ ] Consider adding API response caching to reduce redundant calls
+- [ ] Add retry logic for transient API failures
+- [ ] Investigate `hn-missing-timestamps` flakiness (from Session 1)
+- [ ] Add performance benchmarks
+
+---
+
+### Useful Commands
+
+```bash
+# Run new API fallback test
+npx playwright test tests/hn-api-fallback.spec.ts
+
+# Run with HTML report
+npx playwright test tests/hn-api-fallback.spec.ts --reporter=html
+npx playwright show-report
+
+# Run all tests
+npx playwright test
+```
+
+---
+
+**Next Session:** Run and validate new API fallback test, then implement test 1.7 (Reachability) to complete the test suite.
