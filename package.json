@@ -3,7 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "bench": "npx playwright test --config=playwright.bench.config.js",
+    "bench:page-load": "npx playwright test --config=playwright.bench.config.js page-load",
+    "bench:data-collection": "npx playwright test --config=playwright.bench.config.js data-collection",
+    "bench:report": "node benchmarks/reporter.js summary",
+    "bench:report:detailed": "node benchmarks/reporter.js detailed",
+    "bench:report:html": "npx playwright show-report playwright-report/benchmarks",
+    "bench:compare": "node benchmarks/reporter.js compare",
+    "bench:list": "node benchmarks/reporter.js list"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

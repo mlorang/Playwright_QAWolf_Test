@@ -9,3 +9,6 @@ node_modules/
 
 # Test state files
 .test-state.json
+
+# Benchmark results
+/benchmarks/results/
