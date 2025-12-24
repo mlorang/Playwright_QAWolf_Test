@@ -10,17 +10,20 @@
 ### Tasks Completed
 
 - **Created test for malformed timestamp parsing** (`tests/hn-malformed-timestamps.spec.ts`)
+
   - Implements robust parsing with multiple fallback methods (ISO → EPOCH regex → Date constructor)
   - Logs unparsable timestamps as diagnostics
   - Attaches diagnostic JSON to test reports for debugging
 
 - **Created test for dynamic insertions & race conditions** (`tests/hn-dynamic-inserts.spec.ts`)
+
   - Collects 100 unique article IDs across multiple pages
   - Detects duplicates with detailed diagnostics (page positions, timestamps)
   - Verifies ordering with 95% accuracy threshold to handle race conditions
   - Test passed: 0 duplicates found, 100% ordering accuracy
 
 - **Enhanced 5 existing tests with console logging**
+
   - Added detailed progress indicators to `hn-first-100-order.spec.ts:33-126`
   - Added API fetch logging to `hn-api-first-100-order.spec.ts:17-99`
   - Added duplicate tracking to `hn-pagination-continuity.spec.ts:29-87`
@@ -28,6 +31,7 @@
   - Added placeholder message to `seed.spec.ts:5`
 
 - **Resolved HTML report visibility confusion**
+
   - Explained `playwright.config.js` reporter config (`line` for local, `html` for CI)
   - Documented command: `npx playwright test --reporter=html` for HTML reports locally
 
@@ -61,6 +65,7 @@ CONVERSATION_LOGBOOK.md                (updated)
 **Flaky:** 1 (`hn-api-first-100-order` - live site dependency)
 
 **Coverage by Test Plan:**
+
 - ✅ 1.1 Happy path
 - ✅ 1.2 Pagination continuity
 - ⏭️ 1.3 Missing timestamps (skipped)
@@ -73,18 +78,22 @@ CONVERSATION_LOGBOOK.md                (updated)
 ### Challenges & Resolutions
 
 **Challenge 1: Execution context destroyed during test generation**
+
 - **Problem:** Using `page.evaluate()` with navigation inside caused "Execution context destroyed" error
 - **Resolution:** Switched to Playwright's proper navigation methods - collect data, navigate, then collect again
 
 **Challenge 2: Playwright test generator timeout**
+
 - **Problem:** `playwright-test-generator` became unresponsive during complex pagination interactions
 - **Resolution:** Switched to writing test code directly instead of using interactive generator
 
 **Challenge 3: Test healer oversimplified generated test**
+
 - **Problem:** `playwright-test-healer` simplified the comprehensive malformed timestamps test
 - **Resolution:** Healer's changes were actually valid - matched actual HN structure (30 articles/page, simpler timestamp format)
 
 **Challenge 4: HTML reports not visible**
+
 - **Problem:** User couldn't see tests when running `npx playwright show-report`
 - **Root Cause:** Config uses `line` reporter locally (no HTML generation)
 - **Resolution:** Must run `npx playwright test --reporter=html` explicitly for local HTML reports
@@ -147,6 +156,7 @@ npx playwright test --trace on --reporter=html
 ### Tasks Completed
 
 - **Created comprehensive API fallback test** (`tests/hn-api-fallback.spec.ts`)
+
   - Implements dual-source timestamp collection (DOM `.age[title]` + HN API)
   - Fetches missing timestamps from `https://hacker-news.firebaseio.com/v0/item/<id>.json`
   - Converts API epoch seconds (`time` field) to JavaScript Date objects
@@ -156,6 +166,7 @@ npx playwright test --trace on --reporter=html
   - Requires ≥70% final timestamp coverage for deterministic validation
 
 - **Added API reliability test**
+
   - Tests graceful handling of API failures and rate limiting
   - Validates API accessibility with smaller dataset (10 articles)
   - Logs success rates and failure diagnostics
@@ -183,6 +194,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 **Passing:** Expected 7/8 (new test not yet run)
 
 **Coverage by Test Plan:**
+
 - ✅ 1.1 Happy path
 - ✅ 1.2 Pagination continuity
 - ⏭️ 1.3 Missing timestamps (skipped)
@@ -196,16 +208,19 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 ### Technical Decisions
 
 - **Dual-source timestamp strategy**
+
   - Primary: DOM `.age[title]` attribute (fast, no API calls)
   - Fallback: HN API `/v0/item/<id>.json` for missing timestamps
   - Tracks source for each timestamp to aid debugging
 
 - **API error handling**
+
   - Continue execution on individual API failures
   - Log all API diagnostics (success/failure, HTTP status, error messages)
   - Attach comprehensive JSON diagnostics to test reports
 
 - **Coverage thresholds**
+
   - Require ≥70% final coverage for ordering validation
   - Report both initial DOM coverage and post-fallback coverage
   - Allow graceful degradation if API is unavailable
@@ -219,6 +234,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 ### Key Features of New Test
 
 **Main API Fallback Test:**
+
 1. Collects 100 unique articles with pagination
 2. Extracts DOM timestamps from `.age[title]`
 3. Identifies articles with missing timestamps
@@ -228,6 +244,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 7. Generates detailed diagnostics with coverage analysis
 
 **API Reliability Test:**
+
 1. Tests smaller dataset (10 articles) for faster execution
 2. Simulates scenario where all DOM timestamps are missing
 3. Validates API accessibility and response format
@@ -277,6 +294,7 @@ npx playwright test
 ### Tasks Completed
 
 - **Created reachability test** (`tests/hn-reachability.spec.ts`)
+
   - Implements test 1.7: "Fewer than 100 reachable — fail and report diagnostics"
   - Attempts to collect 100 unique article IDs by paginating until exhaustion
   - Detects page exhaustion via multiple methods:
@@ -312,6 +330,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 **All Test Plan Sections:** ✅ Complete
 
 **Coverage by Test Plan:**
+
 - ✅ 1.1 Happy path (`hn-first-100-order.spec.ts`)
 - ✅ 1.2 Pagination continuity (`hn-pagination-continuity.spec.ts`)
 - ⏭️ 1.3 Missing timestamps (`hn-missing-timestamps.spec.ts` - skipped)
@@ -327,11 +346,13 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 ### Technical Decisions
 
 - **Exhaustion detection strategy**
+
   - Primary: Check if "More" link is visible
   - Secondary: Track consecutive attempts with no new articles (threshold: 3)
   - Reason: Handles both expected exhaustion and unexpected page behavior
 
 - **Diagnostic collection on failure**
+
   - Article IDs list (JSON)
   - Timestamps with article metadata (JSON)
   - Final page HTML (full DOM snapshot)
@@ -340,6 +361,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
   - Reason: Provides comprehensive debugging context for manual triage
 
 - **Date validation in API fallback test**
+
   - Added `isNaN()` checks after creating Date objects
   - Prevents Invalid Date objects from causing downstream errors
   - Logs validation failures with clear diagnostic messages
@@ -354,6 +376,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 ### Key Features of New Test (1.7 Reachability)
 
 **Main Test Flow:**
+
 1. Navigate to `https://news.ycombinator.com/newest`
 2. Collect unique article IDs across pages (deduplicating)
 3. Paginate via "More" link until:
@@ -367,6 +390,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
    - **Pass the test** ✓
 
 **Diagnostic Artifacts (on failure):**
+
 - `collected-article-ids`: Complete list of IDs found
 - `collected-timestamps`: Article metadata with timestamps
 - `final-page-html`: Full page HTML for inspection
@@ -379,12 +403,14 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 ### Implementation Notes
 
 **Used Playwright Test Generator:**
+
 - Initialized with `mcp__playwright-test__generator_setup_page`
 - Navigated to HN /newest page to understand structure
 - Closed browser and wrote test code directly
 - Generator helped visualize page structure and element references
 
 **Pattern Consistency:**
+
 - Follows same structure as `hn-pagination-continuity.spec.ts`
 - Uses identical deduplication logic (Set + array)
 - Same console logging format with visual indicators (✓, ⚠️, ✗)
@@ -397,6 +423,7 @@ AIConversationLog/CONVERSATION_LOGBOOK.md  (this file)
 **Current Branch:** `1.7-Fewer_than_100_reachable-fail_and_report_diagnostics`
 
 **Changes:**
+
 - Modified: `tests/hn-api-fallback.spec.ts`
 - Untracked: `tests/hn-reachability.spec.ts`
 
