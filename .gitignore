@@ -6,3 +6,9 @@ node_modules/
 # Playwright
 /blob-report/
 /playwright/.auth/
+
+# Test state files
+.test-state.json
+
+# Benchmark results
+/benchmarks/results/

@@ -11,13 +11,21 @@ const isCI = !!process.env.CI;
 module.exports = defineConfig({
   testDir: './tests',
 
+  // Global setup/teardown for rate limiting
+  globalSetup: require.resolve('./global-setup.js'),
+  globalTeardown: require.resolve('./global-teardown.js'),
+
   // Safety rails
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  workers: 1, // Always run tests serially to avoid HN rate limiting
+  fullyParallel: false, // Run tests sequentially
 
   // Reporting
   reporter: isCI ? 'html' : 'line',
+
+  // Timeout settings - increase for rate-limited tests
+  timeout: 120000, // 2 minutes per test (includes rate limiting delays)
 
   use: {
     trace: isCI ? 'on-first-retry' : 'off',
