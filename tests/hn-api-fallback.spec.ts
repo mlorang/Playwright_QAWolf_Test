@@ -1,3 +1,7 @@
+// spec: specs/indexjs-first-100-order.plan.md
+// seed: tests/seed.spec.ts
+// @ts-check
+
 import { test, expect } from '@playwright/test';
 
 interface ArticleData {
@@ -106,7 +110,13 @@ test.describe('HN API Fallback for Authoritative Timestamps', () => {
     for (const article of articles) {
       if (article.domTimestamp) {
         try {
-          article.finalTimestamp = new Date(article.domTimestamp);
+          const parsedDate = new Date(article.domTimestamp);
+          // Validate that the Date is valid (not NaN)
+          if (!isNaN(parsedDate.getTime())) {
+            article.finalTimestamp = parsedDate;
+          } else {
+            console.log(`  Failed to parse DOM timestamp for article ${article.id}: ${article.domTimestamp} (Invalid Date)`);
+          }
         } catch (error) {
           console.log(`  Failed to parse DOM timestamp for article ${article.id}: ${article.domTimestamp}`);
         }
@@ -132,15 +142,27 @@ test.describe('HN API Fallback for Authoritative Timestamps', () => {
             
             if (data.time) {
               article.apiTimestamp = data.time;
-              article.finalTimestamp = new Date(data.time * 1000); // Convert epoch seconds to milliseconds
-              
-              apiDiagnostics.push({
-                id: article.id,
-                success: true,
-                time: data.time
-              });
-              
-              console.log(`  ✓ Article ${article.id}: Retrieved API timestamp ${data.time} (${article.finalTimestamp.toISOString()})`);
+              const apiDate = new Date(data.time * 1000); // Convert epoch seconds to milliseconds
+
+              // Validate that the Date is valid (not NaN)
+              if (!isNaN(apiDate.getTime())) {
+                article.finalTimestamp = apiDate;
+
+                apiDiagnostics.push({
+                  id: article.id,
+                  success: true,
+                  time: data.time
+                });
+
+                console.log(`  ✓ Article ${article.id}: Retrieved API timestamp ${data.time} (${article.finalTimestamp.toISOString()})`);
+              } else {
+                apiDiagnostics.push({
+                  id: article.id,
+                  success: false,
+                  error: `Invalid timestamp from API: ${data.time}`
+                });
+                console.log(`  ✗ Article ${article.id}: Invalid timestamp from API: ${data.time}`);
+              }
             } else {
               apiDiagnostics.push({
                 id: article.id,
@@ -237,7 +259,7 @@ test.describe('HN API Fallback for Authoritative Timestamps', () => {
           nextTime: v.next.finalTimestamp?.toISOString(),
           nextSource: v.next.domTimestamp ? 'DOM' : 'API'
         }))
-      }, 2),
+      }, null, 2),
       contentType: 'application/json'
     });
 
@@ -250,7 +272,7 @@ test.describe('HN API Fallback for Authoritative Timestamps', () => {
         apiTimestamp: a.apiTimestamp,
         finalTimestamp: a.finalTimestamp?.toISOString(),
         source: a.domTimestamp ? 'DOM' : (a.apiTimestamp ? 'API' : 'MISSING')
-      })), 2),
+      })), null, 2),
       contentType: 'application/json'
     });
 
@@ -333,7 +355,7 @@ test.describe('HN API Fallback for Authoritative Timestamps', () => {
         failedCalls: apiResults.length - successCount,
         successRate: `${(successCount/articles.length*100).toFixed(1)}%`,
         results: apiResults
-      }, 2),
+      }, null, 2),
       contentType: 'application/json'
     });
   });
