@@ -14,17 +14,21 @@ test.describe('First 100 Hacker News /newest ordering', () => {
     const formatItem = (it: { id: number; time: number; title?: string }) => `${it.id} (${new Date(it.time * 1000).toISOString()})${it.title ? ' — ' + it.title : ''}`;
 
     // Step: fetch top 100 IDs
+    console.log('\n=== FETCHING FROM HN API ===');
     let ids: number[] = [];
     await test.step('Fetch top 100 story IDs from HN API', async () => {
+      console.log('Fetching newstories list...');
       const idsResp = await request.get('https://hacker-news.firebaseio.com/v0/newstories.json');
       expect(idsResp.ok(), `Failed to fetch newstories: ${idsResp.status()}`).toBeTruthy();
       const allIds = (await idsResp.json()) as number[];
       ids = allIds.slice(0, 100);
+      console.log(`✓ Fetched ${ids.length} story IDs`);
     });
 
     // Step: fetch item JSONs (title + time) in batches and collect
     const items: { id: number; time: number; title?: string }[] = [];
     await test.step('Fetch item JSONs (batch requests)', async () => {
+      console.log('Fetching item details in batches...');
       const batchSize = 20;
       for (let i = 0; i < ids.length; i += batchSize) {
         const batch = ids.slice(i, i + batchSize);
@@ -35,7 +39,9 @@ test.describe('First 100 Hacker News /newest ordering', () => {
           return { id, time: j.time as number, title: j.title as string };
         }));
         items.push(...results);
+        console.log(`  Batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(ids.length/batchSize)}: Fetched ${results.length} items (total: ${items.length})`);
       }
+      console.log(`✓ All item details fetched`);
     });
 
     // Step: verify we have 100 items
@@ -46,6 +52,7 @@ test.describe('First 100 Hacker News /newest ordering', () => {
 
     // Step: verify non-increasing order by epoch with human-readable diagnostics
     await test.step('Verify order newest → oldest', async () => {
+      console.log('\n=== VERIFYING ORDERING ===');
       const violations: { index: number; a: { id: number; time: number; title?: string }; b: { id: number; time: number; title?: string } }[] = [];
       for (let i = 0; i < items.length - 1; i++) {
         const a = items[i];
@@ -56,16 +63,22 @@ test.describe('First 100 Hacker News /newest ordering', () => {
       }
 
       if (violations.length > 0) {
+        console.log(`✗ Found ${violations.length} ordering violations`);
         const human = violations.slice(0, 10).map(v => `${v.index}: ${formatItem(v.a)} < ${formatItem(v.b)}`);
         expect(violations, `Ordering violations detected (showing up to 10):\n${human.join('\n')}`).toHaveLength(0);
+      } else {
+        console.log(`✓ All 100 items are correctly ordered (newest → oldest)`);
       }
     });
 
     // Step: Sanity check UI ordering for visible items with readable times
     await test.step('Sanity: UI contains top visible IDs in relative order', async () => {
+      console.log('\n=== SANITY CHECK: UI ORDERING ===');
       const visibleIds: number[] = await page.evaluate(() => {
         return Array.from(document.querySelectorAll('tr.athing')).map(r => Number(r.getAttribute('id')));
       });
+      console.log(`Found ${visibleIds.length} visible articles on page`);
+
       const humanVisible = visibleIds.map((id, idx) => {
         const indexInTop = ids.indexOf(id);
         const it = items.find(x => x.id === id);
@@ -82,6 +95,8 @@ test.describe('First 100 Hacker News /newest ordering', () => {
           expect(prevIndex, 'previous visible ID not found in top 100 API list').toBeLessThan(expectedIndex);
         }
       }
+      console.log(`✓ UI articles match API ordering`);
+      console.log(`\nTest completed successfully!`);
     });
   });
 });

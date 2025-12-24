@@ -37,10 +37,15 @@ test.describe('HN authoritative missing timestamps — harvest and coverage', ()
       }
     };
 
+    console.log('\n=== COLLECTING 100 ARTICLE IDS ===');
     let exhaustionAttempts = 0;
+    let pageNum = 1;
     while (collected.length < 100) {
       const pageIds = await page.locator('tr.athing').evaluateAll((els) => els.map((el) => (el as HTMLElement).getAttribute('id') || ''));
+      const beforeCount = collected.length;
       appendUnseen(pageIds);
+      console.log(`Page ${pageNum}: Collected ${collected.length - beforeCount} new IDs. Total: ${collected.length}/100`);
+      pageNum++;
       if (collected.length >= 100) break;
 
       const more = page.getByRole('link', { name: 'More', exact: true });
@@ -83,6 +88,8 @@ test.describe('HN authoritative missing timestamps — harvest and coverage', ()
     await testInfo.attach('collected-ids', { body: JSON.stringify(collected, null, 2), contentType: 'application/json' });
 
     // 2. Authoritative harvest loop
+    console.log('\n=== HARVESTING AUTHORITATIVE TIMESTAMPS ===');
+    console.log('Visiting each article detail page (this may take a while)...');
     const authoritative: Array<{
       id: string;
       title: string | null;
@@ -96,6 +103,10 @@ test.describe('HN authoritative missing timestamps — harvest and coverage', ()
     const titleRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
     for (const id of collected) {
+      if ((collected.indexOf(id) + 1) % 10 === 0) {
+        const parsed = authoritative.filter(a => a.epochMs !== null).length;
+        console.log(`  Progress: ${collected.indexOf(id) + 1}/100 articles visited, ${parsed} timestamps found`);
+      }
       let attempt = 0;
       let success = false;
       let info = { id, title: null as string | null, text: null as string | null, epochMs: null as number | null, outer: null as string | null, error: undefined as string | undefined };
@@ -152,11 +163,14 @@ test.describe('HN authoritative missing timestamps — harvest and coverage', ()
     await testInfo.attach('authoritative-harvest', { body: JSON.stringify(authoritative, null, 2), contentType: 'application/json' });
 
     // 3. Coverage and diagnostics sampling
+    console.log('\n=== ANALYZING COVERAGE ===');
     const authoritativeCount = authoritative.filter(a => a.title && a.epochMs !== null).length;
     const coverage = authoritativeCount / 100;
+    console.log(`Authoritative timestamps found: ${authoritativeCount}/100 (${(coverage * 100).toFixed(1)}%)`);
 
     // collect up to 10 diagnostic outerHTMLs for missing/unparsable items
     const missing = authoritative.filter(a => !(a.title && a.epochMs !== null));
+    console.log(`Missing timestamps: ${missing.length}`);
     const diagSamples = missing.slice(0, 10).map((a) => ({ id: a.id, title: a.title, outer: a.outer, error: a.error }));
     await testInfo.attach('diagnostic-samples', { body: JSON.stringify(diagSamples, null, 2), contentType: 'application/json' });
 
@@ -165,20 +179,33 @@ test.describe('HN authoritative missing timestamps — harvest and coverage', ()
 
     // 4. Branch on coverage
     // Adjusted threshold to 0.35 (35%) based on current HN structure where many items don't have span.age
+    console.log('\n=== VERIFYING ORDERING ===');
     if (coverage >= 0.35) {
+      console.log(`✓ Coverage meets threshold (≥35%), verifying ordering...`);
       // build ordered parsed epochs for the collected ids in listing order
       const parsed = authoritative
         .map((a, idx) => ({ idx, id: a.id, epochMs: a.epochMs }))
         .filter((p) => p.epochMs !== null) as Array<{ idx: number; id: string; epochMs: number }>;
 
       // Assert non-increasing order across the parsed subset
+      let violations = 0;
       for (let i = 0; i < parsed.length - 1; i++) {
         const left = parsed[i].epochMs;
         const right = parsed[i + 1].epochMs;
+        if (left < right) {
+          violations++;
+          console.log(`✗ Violation at index ${i}: ${parsed[i].id} < ${parsed[i+1].id}`);
+        }
         expect(left, `Order violation at parsed index ${i} (collected idx ${parsed[i].idx} id=${parsed[i].id})`).toBeGreaterThanOrEqual(right);
       }
+      if (violations === 0) {
+        console.log(`✓ All ${parsed.length} timestamps are correctly ordered`);
+      }
+      console.log(`\nTest completed successfully!`);
     } else {
       // Insufficient authoritative coverage → INCONCLUSIVE
+      console.log(`⚠️  Coverage below threshold (need ≥35%, got ${(coverage * 100).toFixed(1)}%)`);
+      console.log(`Test marked as INCONCLUSIVE`);
       await testInfo.attach('inconclusive', { body: JSON.stringify({ authoritativeCount, coverage, note: 'coverage < 0.35' }, null, 2), contentType: 'application/json' });
       // fail the test to indicate inconclusive result with context
       expect(coverage, `INCONCLUSIVE: authoritative coverage (${(coverage * 100).toFixed(1)}%) < 35%`).toBeGreaterThanOrEqual(0.35);

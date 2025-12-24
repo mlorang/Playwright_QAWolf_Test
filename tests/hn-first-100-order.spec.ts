@@ -30,9 +30,12 @@ test.describe('Hacker News /newest — First 100 ordering', () => {
     };
 
     // 2. Repeatedly collect visible timestamps from `.age[title]` for `tr.athing` rows in page order, then click the visible `More` link, wait for the listing to change, and continue until EXACTLY 100 timestamps are collected or `More` disappears.
+    console.log('\n=== COLLECTING ARTICLES ===');
     let exhaustionAttempts = 0;
+    let pageNum = 1;
     while (collected.length < 100) {
       const pageItems = await extractPageItems();
+      const beforeCount = collected.length;
       for (const it of pageItems) {
         if (!seen.has(it.id)) {
           seen.add(it.id);
@@ -40,6 +43,9 @@ test.describe('Hacker News /newest — First 100 ordering', () => {
         }
         if (collected.length >= 100) break;
       }
+      const newlyCollected = collected.length - beforeCount;
+      console.log(`Page ${pageNum}: Collected ${newlyCollected} new articles. Total: ${collected.length}/100`);
+      pageNum++;
       if (collected.length >= 100) break;
 
       const more = page.getByRole('link', { name: 'More', exact: true });
@@ -82,13 +88,16 @@ test.describe('Hacker News /newest — First 100 ordering', () => {
     const first100 = collected.slice(0, 100);
     await testInfo.attach('collected-first-100', { body: JSON.stringify(first100, null, 2), contentType: 'application/json' });
 
+    console.log('\n=== VALIDATING TIMESTAMPS ===');
     // Ensure we have 100 items and each has an authoritative `.age[title]` value
     const missingTs = first100.filter(it => !it.ts);
     if (missingTs.length) {
+      console.log(`⚠️  Missing timestamps: ${missingTs.length}`);
       await testInfo.attach('missing-timestamps', { body: JSON.stringify(missingTs, null, 2), contentType: 'application/json' });
       await testInfo.attach('page-html', { body: await page.content(), contentType: 'text/html' });
       expect(missingTs.length, `Expected 100 timestamps from .age[title], but ${missingTs.length} were missing`).toBe(0);
     }
+    console.log(`✓ All 100 articles have timestamps`);
 
     const dates = first100.map((it) => {
       const iso = it.ts!.split(/\s+/)[0];
@@ -98,16 +107,28 @@ test.describe('Hacker News /newest — First 100 ordering', () => {
 
     const unparsable = dates.filter(d => !isFinite(d.epoch));
     if (unparsable.length) {
+      console.log(`⚠️  Unparsable timestamps: ${unparsable.length}`);
       await testInfo.attach('unparsable-timestamps', { body: JSON.stringify(unparsable, null, 2), contentType: 'application/json' });
       await testInfo.attach('page-html', { body: await page.content(), contentType: 'text/html' });
       expect(unparsable.length, `Found unparsable timestamps`).toBe(0);
     }
+    console.log(`✓ All timestamps are parsable`);
 
     // 4. Assert that for every i: Date[i] >= Date[i+1] (non-increasing order newest→oldest).
+    console.log('\n=== VERIFYING ORDERING ===');
+    let violations = 0;
     for (let i = 0; i < dates.length - 1; i++) {
       const left = dates[i].epoch;
       const right = dates[i + 1].epoch;
+      if (left < right) {
+        violations++;
+        console.log(`✗ Violation at position ${i}: ${dates[i].id} (${dates[i].iso}) < ${dates[i+1].id} (${dates[i+1].iso})`);
+      }
       expect(left, `Order violation at index ${i}: id=${dates[i].id} (${dates[i].ts}) < id=${dates[i+1].id} (${dates[i+1].ts})`).toBeGreaterThanOrEqual(right);
     }
+    if (violations === 0) {
+      console.log(`✓ All 100 articles are correctly ordered (newest → oldest)`);
+    }
+    console.log(`\nTest completed successfully!`);
   });
 });
