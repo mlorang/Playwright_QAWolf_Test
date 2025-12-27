@@ -23,7 +23,7 @@ npx playwright show-report
 npm run bench
 
 # View benchmark results
-open benchmark-dashboard/index.html
+open dashboards/benchmark-dashboard/index.html
 ```
 
 ### What's Included
