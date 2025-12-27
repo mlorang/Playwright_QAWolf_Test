@@ -2,26 +2,57 @@
 
 This document serves as a reference for prompt quality analysis that happens **directly in your conversations with Claude**.
 
+## Active Configuration
+
+**Automatic Quality Checking is ENABLED with the following settings:**
+
+- **Scope:** Implementation and coding tasks only (feature development, bug fixes, refactoring, etc.)
+- **Quality Threshold:** 7/10 - prompts scoring below this will be blocked for improvement
+- **Analysis Detail:** Full detailed breakdown with all four criteria, specific issues, and suggestions
+- **Simple Requests:** No analysis needed (reading files, running commands, etc.)
+
 ## How It Works
 
-When you want to check if a prompt is well-written:
+### For Implementation/Coding Tasks:
 
-1. **Share your draft prompt** with me by saying something like:
-   - "Can you check this prompt: [your prompt]"
-   - "Is this prompt well-written: [your prompt]"
-   - "Analyze this prompt: [your prompt]"
+**I will automatically analyze your prompt BEFORE starting work** on:
+- Feature development and new functionality
+- Bug fixes and debugging tasks
+- Code refactoring
+- Architecture changes
+- Any task involving code modifications
 
-2. **I'll analyze it** based on four criteria:
+**The Process:**
+
+1. **I analyze your prompt** based on four criteria:
    - Clarity and Specificity
    - Context Completeness
    - Actionability
    - Technical Accuracy
 
-3. **You'll get feedback** including:
-   - Overall quality score (1-10)
-   - Detailed scores for each criterion
-   - Specific suggestions for improvement
-   - An improved version of your prompt
+2. **If score ≥ 7/10:** I proceed with the task immediately
+
+3. **If score < 7/10:** I will:
+   - Show you the detailed analysis with scores for each criterion
+   - Provide specific suggestions for improvement
+   - Offer an improved version of your prompt
+   - **BLOCK execution** until you refine the prompt
+
+### For Simple/Non-Coding Tasks:
+
+I will proceed immediately without analysis for:
+- Reading files
+- Running searches
+- Explaining code
+- Answering questions
+- Running commands
+
+### Manual Quality Check:
+
+You can also request a quality check anytime by saying:
+- "Can you check this prompt: [your prompt]"
+- "Is this prompt well-written: [your prompt]"
+- "Analyze this prompt: [your prompt]"
 
 ---
 
@@ -111,10 +142,11 @@ Uses general terms correctly ("UI", "benchmark results", "export") but lacks tec
 
 ## Usage Tips
 
-- **Before starting a complex task**, share your draft prompt with me first
-- Say something like: "Before we start, can you check if this prompt is well-written: [prompt]"
-- I'll analyze it and help you refine it before we begin implementation
-- This saves time by avoiding back-and-forth clarifications
+- **Automatic analysis is enabled** for implementation tasks - no need to ask!
+- I will automatically check your prompt quality before starting any coding work
+- If your prompt scores below 7/10, I'll help you improve it before proceeding
+- This saves time by ensuring we have all necessary information upfront
+- For simple tasks (reading files, searches), I proceed immediately without analysis
 
 ---
 
@@ -127,4 +159,19 @@ Uses general terms correctly ("UI", "benchmark results", "export") but lacks tec
 
 ---
 
-**Ready to use!** Just share any prompt you want me to analyze, and I'll give you feedback before we proceed with the actual task.
+## Configuration History
+
+**Last Updated:** 2025-12-26
+
+**Current Settings:**
+- Auto-check enabled: ✓ Yes
+- Scope: Implementation/coding tasks only
+- Quality threshold: 7/10 (block if below)
+- Analysis detail: Full detailed breakdown
+- Simple requests: Skip analysis
+
+**To modify these settings**, ask me to reconfigure the prompt quality checker with your preferred options.
+
+---
+
+**Ready to use!** Automatic quality checking is now active. Just give me your implementation tasks, and I'll analyze them before proceeding if needed.
