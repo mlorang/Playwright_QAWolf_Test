@@ -14,18 +14,31 @@ async function sortHackerNewsArticles() {
     await page.waitForSelector(".athing");
 
     let timestamps = [];
+    const seenIds = new Set(); // Track seen article IDs to prevent duplicates
 
     // ======================
     // ACT
     // ======================
     while (timestamps.length < 100) {
-      // Grab timestamps from the current page
-      const pageTimestamps = await page.$$eval(
-        ".age",
-        elements => elements.map(el => el.getAttribute("title"))
-      );
+      // Collect articles with their IDs and timestamps to detect duplicates
+      const articles = await page.$$eval(".athing", (rows) => {
+        return rows.map((row) => {
+          const id = row.getAttribute("id");
+          const subtextRow = row.nextElementSibling;
+          const ageElement = subtextRow?.querySelector(".age");
+          const timestamp = ageElement?.getAttribute("title") || null;
+          return { id, timestamp };
+        });
+      });
 
-      timestamps.push(...pageTimestamps);
+      // Filter out duplicates and collect new timestamps
+      for (const article of articles) {
+        if (article.id && !seenIds.has(article.id) && article.timestamp) {
+          seenIds.add(article.id);
+          timestamps.push(article.timestamp);
+          if (timestamps.length >= 100) break;
+        }
+      }
 
       // Stop if we already have 100
       if (timestamps.length >= 100) break;

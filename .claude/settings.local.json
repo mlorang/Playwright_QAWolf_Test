@@ -6,5 +6,9 @@
       "Bash(npx playwright test --reporter=line --workers=1)",
       "Bash(npx playwright test:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "playwright-test"
+  ],
+  "enableAllProjectMcpServers": true
 }

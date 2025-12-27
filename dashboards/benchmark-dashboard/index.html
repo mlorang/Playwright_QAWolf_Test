@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmark Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Benchmark Dashboard</h1>
+                <p class="subtitle">View and analyze Playwright benchmark performance results</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-help" onclick="openHelp()">
+                    <span>❓</span> Help
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal" onclick="closeHelp()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h2>Benchmark Dashboard Guide</h2>
+                    <button class="modal-close" onclick="closeHelp()">&times;</button>
+                </div>
+                <div class="modal-body" id="help-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Benchmark Upload Section -->
+        <div class="section">
+            <h2>Load Benchmark Results</h2>
+            <div class="file-upload">
+                <label for="benchmark-files">
+                    Select Benchmark JSON Files
+                    <input type="file" id="benchmark-files" accept=".json" multiple>
+                </label>
+            </div>
+            <div class="file-list" id="loaded-files"></div>
+        </div>
+
+        <!-- Latest Results Section -->
+        <div class="section" id="latest-results-section" style="display: none;">
+            <h2>Latest Benchmark Results</h2>
+            <div id="latest-timestamp"></div>
+            <div class="stats-grid" id="latest-stats"></div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="section" id="comparison-section" style="display: none;">
+            <h2>Performance Trends</h2>
+            <div class="benchmark-selector">
+                <label for="benchmark-type-select">Select Benchmark Type: </label>
+                <select id="benchmark-type-select">
+                    <option value="">-- Select a benchmark --</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="trend-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Results Table -->
+        <div class="section" id="details-section" style="display: none;">
+            <h2>Detailed Results</h2>
+            <div class="details-filters">
+                <div class="filter-group">
+                    <label for="details-benchmark-filter">Benchmark Type: </label>
+                    <select id="details-benchmark-filter">
+                        <option value="">All Benchmarks</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="details-file-filter">File/Date: </label>
+                    <select id="details-file-filter">
+                        <option value="">All Files</option>
+                    </select>
+                </div>
+                <button class="btn-secondary" onclick="clearDetailsFilters()">Clear Filters</button>
+            </div>
+            <div id="details-table-container"></div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="section" id="export-section" style="display: none;">
+            <h2>Export Data</h2>
+            <div class="button-group">
+                <button class="btn-success" onclick="exportToJSON()">Export as JSON</button>
+                <button class="btn-success" onclick="exportToCSV()">Export as CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load modules in dependency order -->
+    <script src="scripts/state.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/help.js"></script>
+    <script src="scripts/data-loader.js"></script>
+    <script src="scripts/charts.js"></script>
+    <script src="scripts/results.js"></script>
+    <script src="scripts/details-table.js"></script>
+    <script src="scripts/export.js"></script>
+    <script src="scripts/ui-manager.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+</html>

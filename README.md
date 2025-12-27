@@ -1,8 +1,128 @@
 # 🐺 QA Wolf Take Home Assignment
 
-Welcome to the QA Wolf take home assignment for our [QA Engineer](https://www.task-wolf.com/apply-qae) role! We appreciate your interest and look forward to seeing what you come up with.
+## Solution Overview
 
-## Instructions
+This submission includes a comprehensive Playwright-based testing solution for Hacker News, featuring automated validation, performance benchmarking, and visualization tools.
+
+### Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Run the main validation script
+node index.js
+
+# Run the full test suite
+npx playwright test
+
+# View test results
+npx playwright show-report
+
+# Run performance benchmarks
+npm run bench
+
+# View benchmark results
+open dashboards/benchmark-dashboard/index.html
+```
+
+### What's Included
+
+#### ✅ Core Assignment (Question 1)
+
+- **`index.js`** - Validates that the first 100 articles on HN/newest are sorted from newest to oldest
+- Handles edge cases: missing timestamps, malformed data, dynamic content changes
+- Robust error handling and clear output
+
+#### 🧪 Comprehensive Test Suite
+
+Beyond the basic requirement, I built a full test suite covering:
+
+- **Sorting validation** - First 100 articles chronological order
+- **Pagination continuity** - Articles flow correctly across pages
+- **API fallback testing** - Graceful degradation when DOM parsing fails
+- **Edge cases** - Missing timestamps, malformed data, dynamic inserts
+- **Site reachability** - Basic smoke tests
+
+**Test Results:** All tests passing with batched execution for optimal performance
+
+#### 📊 Performance Benchmarking System
+
+A complete benchmarking infrastructure to track performance over time:
+
+- **Page load metrics** - Track loading performance for /newest and /news
+- **Data collection benchmarks** - Measure article extraction and pagination performance
+- **Statistical analysis** - Calculate mean, median, min, max, P95, P99 for all metrics
+- **JSON export** - Results saved with timestamps for trend analysis
+
+#### 📈 Interactive Benchmark Dashboard
+
+A professional visualization tool for analyzing benchmark results:
+
+- **Performance trends** - Interactive line charts showing metrics over time
+- **Latest results** - Card-based view of most recent benchmark run
+- **Detailed table** - Complete tabular view with filtering by benchmark type and date
+- **Dark mode** - Theme toggle for comfortable viewing
+- **Data export** - Export results as JSON or CSV for further analysis
+- **Help documentation** - Built-in guide accessible via help button
+
+### Project Structure
+
+```
+qa_wolf_take_home/
+├── index.js                    # Main validation script (Question 1)
+├── tests/                      # Playwright test suite
+│   ├── hn-first-100-order.spec.ts
+│   ├── hn-pagination-continuity.spec.ts
+│   ├── hn-missing-timestamps.spec.ts
+│   └── ... (9 test files total)
+├── benchmarks/                 # Performance benchmarking
+│   ├── hn-benchmarks.ts        # Benchmark suite
+│   ├── results/                # JSON results with timestamps
+│   └── README.md              # Benchmark documentation
+├── benchmark-dashboard/        # Visualization tool
+│   ├── index.html
+│   ├── styles.css
+│   ├── scripts/
+│   └── DASHBOARD_README.md
+└── playwright.config.ts        # Playwright configuration
+```
+
+### Key Features
+
+**Reliability:**
+
+- Handles missing/malformed timestamps gracefully
+- Tests for both DOM-based and API-based data collection
+- Validates pagination continuity across page boundaries
+- Comprehensive error handling
+
+**Performance:**
+
+- Batched test execution for faster runs
+- Benchmark suite tracks performance trends
+- Optimized for local development workflow
+
+**User Experience:**
+
+- Clear, actionable error messages
+- Interactive dashboard with filtering and dark mode
+- Comprehensive documentation
+- Easy-to-use npm scripts
+
+### Design Decisions
+
+1. **Why both `index.js` and test suite?** - `index.js` provides a simple, standalone script as requested. The test suite adds comprehensive coverage and integrates with CI/CD workflows.
+
+2. **Why benchmarking?** - Performance monitoring helps catch regressions early and validates that optimization efforts are effective.
+
+3. **Why a dashboard?** - Manual JSON inspection doesn't scale. The dashboard makes it easy to spot trends, regressions, and compare runs over time.
+
+4. **Why the extra edge case tests?** - Real-world testing requires handling unexpected scenarios. These tests ensure the solution is production-ready.
+
+---
+
+## Original Assignment Instructions
 
 This assignment has two questions as outlined below. When you are done, upload your assignment to our [application page](https://www.task-wolf.com/apply-qae):
 
