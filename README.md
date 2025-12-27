@@ -23,7 +23,7 @@ npx playwright show-report
 npm run bench
 
 # View benchmark results
-open dashboard/index.html
+open benchmark-dashboard/index.html
 ```
 
 ### What's Included
@@ -80,10 +80,10 @@ qa_wolf_take_home/
 │   ├── hn-benchmarks.ts        # Benchmark suite
 │   ├── results/                # JSON results with timestamps
 │   └── README.md              # Benchmark documentation
-├── dashboard/                  # Visualization tool
+├── benchmark-dashboard/        # Visualization tool
 │   ├── index.html
 │   ├── styles.css
-│   ├── script.js
+│   ├── scripts/
 │   └── DASHBOARD_README.md
 └── playwright.config.ts        # Playwright configuration
 ```

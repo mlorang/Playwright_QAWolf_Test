@@ -14,9 +14,9 @@ A web-based dashboard for viewing and analyzing Playwright benchmark performance
 
 1. **Open the dashboard:**
    \`\`\`bash
-   open dashboard/index.html
+   open benchmark-dashboard/index.html
    \`\`\`
-   Or simply double-click \`dashboard/index.html\` in your file browser.
+   Or simply double-click \`benchmark-dashboard/index.html\` in your file browser.
 
 2. **Load benchmark data:**
    - Click "Select Benchmark JSON Files" button
@@ -160,7 +160,7 @@ You can use this dashboard alongside your existing benchmark workflow:
 npm run bench
 
 # Open dashboard to view results
-open dashboard.html
+open benchmark-dashboard/index.html
 # Then load files from benchmarks/results/
 
 # Or run specific benchmarks
@@ -176,7 +176,7 @@ npm run bench:data-collection
 
 For frequent analysis, you can:
 
-1. Keep the dashboard open in a browser tab (\`dashboard/index.html\`)
+1. Keep the dashboard open in a browser tab (\`benchmark-dashboard/index.html\`)
 2. Run benchmarks with \`npm run bench\`
 3. Click "Select Benchmark JSON Files" and reload the new results
 4. Charts update automatically
@@ -200,10 +200,10 @@ Use the dashboard to:
 
 ## File Structure
 
-Dashboard directory: \`dashboard/\`
+Dashboard directory: \`benchmark-dashboard/\`
 - \`index.html\` - Main HTML file
 - \`styles.css\` - Stylesheet with light/dark theme
-- \`script.js\` - JavaScript logic for data loading, charts, and theme switching
+- \`scripts/\` - JavaScript modules for data loading, charts, and theme switching
 
 Related directories:
 - Benchmark results: \`benchmarks/results/\`

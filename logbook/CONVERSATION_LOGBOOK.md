@@ -439,13 +439,13 @@ npm run bench:list
 
 **Dashboard Improvements:**
 - Fixed typo in benchmark dropdown where "collect30Articles" displayed as "Collect30 Articles" with unwanted space
-  - Updated `formatBenchmarkName()` regex in [dashboard/scripts/utils.js](../dashboard/scripts/utils.js:11-18)
+  - Updated `formatBenchmarkName()` regex in [benchmark-dashboard/scripts/utils.js](../benchmark-dashboard/scripts/utils.js:11-18)
   - Changed pattern to preserve number-to-letter spacing: `replace(/(\d)\s+([A-Z])/g, '$1 $2')`
 - Added filtering functionality to Detailed Results table
   - Created dual-filter system: benchmark type + file/date filters
   - Filters work with AND logic (both must match if both selected)
   - Added "Clear Filters" button for easy reset
-  - Modified [dashboard/index.html](../dashboard/index.html:76-90) and [dashboard/scripts/details-table.js](../dashboard/scripts/details-table.js)
+  - Modified [benchmark-dashboard/index.html](../benchmark-dashboard/index.html:76-90) and [benchmark-dashboard/scripts/details-table.js](../benchmark-dashboard/scripts/details-table.js)
 - Explored adding 4 new visualizations (bar chart, box plot, heatmap, histogram)
   - User selected all 4 options from multiple choice question
   - Implemented all 4 visualizations with Chart.js
@@ -465,26 +465,26 @@ npm run bench:list
 - README now showcases work professionally while maintaining submission requirements
 
 **Code Refactoring - Dashboard Modularization:**
-- Broke down monolithic 748-line `dashboard/script.js` into **11 focused modules**:
-  1. [scripts/state.js](../dashboard/scripts/state.js) - Global state management (302 bytes)
-  2. [scripts/utils.js](../dashboard/scripts/utils.js) - Utility functions (457 bytes)
-  3. [scripts/theme.js](../dashboard/scripts/theme.js) - Dark/light mode (1.1 KB)
-  4. [scripts/help.js](../dashboard/scripts/help.js) - Help modal with embedded docs (9.1 KB)
-  5. [scripts/data-loader.js](../dashboard/scripts/data-loader.js) - File upload and parsing (1.7 KB)
-  6. [scripts/charts.js](../dashboard/scripts/charts.js) - Chart.js rendering (4.7 KB)
-  7. [scripts/results.js](../dashboard/scripts/results.js) - Latest results display (1.2 KB)
-  8. [scripts/details-table.js](../dashboard/scripts/details-table.js) - Table with filters (3.9 KB)
-  9. [scripts/export.js](../dashboard/scripts/export.js) - JSON/CSV export (1.2 KB)
-  10. [scripts/ui-manager.js](../dashboard/scripts/ui-manager.js) - UI orchestration (687 bytes)
-  11. [scripts/script.js](../dashboard/scripts/script.js) - Main entry point (702 bytes)
-- Created [scripts/MODULES.md](../dashboard/scripts/MODULES.md) documenting:
+- Broke down monolithic 748-line `benchmark-dashboard/script.js` into **11 focused modules**:
+  1. [scripts/state.js](../benchmark-dashboard/scripts/state.js) - Global state management (302 bytes)
+  2. [scripts/utils.js](../benchmark-dashboard/scripts/utils.js) - Utility functions (457 bytes)
+  3. [scripts/theme.js](../benchmark-dashboard/scripts/theme.js) - Dark/light mode (1.1 KB)
+  4. [scripts/help.js](../benchmark-dashboard/scripts/help.js) - Help modal with embedded docs (9.1 KB)
+  5. [scripts/data-loader.js](../benchmark-dashboard/scripts/data-loader.js) - File upload and parsing (1.7 KB)
+  6. [scripts/charts.js](../benchmark-dashboard/scripts/charts.js) - Chart.js rendering (4.7 KB)
+  7. [scripts/results.js](../benchmark-dashboard/scripts/results.js) - Latest results display (1.2 KB)
+  8. [scripts/details-table.js](../benchmark-dashboard/scripts/details-table.js) - Table with filters (3.9 KB)
+  9. [scripts/export.js](../benchmark-dashboard/scripts/export.js) - JSON/CSV export (1.2 KB)
+  10. [scripts/ui-manager.js](../benchmark-dashboard/scripts/ui-manager.js) - UI orchestration (687 bytes)
+  11. [scripts/script.js](../benchmark-dashboard/scripts/script.js) - Main entry point (702 bytes)
+- Created [scripts/MODULES.md](../benchmark-dashboard/scripts/MODULES.md) documenting:
   - Module structure and responsibilities
   - Load order dependencies
   - Benefits of modularization
   - File size comparison (before/after)
   - Backwards compatibility notes
-- Organized all JavaScript files into `dashboard/scripts/` folder
-- Updated [dashboard/index.html](../dashboard/index.html:104-115) to load modules from scripts folder in dependency order
+- Organized all JavaScript files into `benchmark-dashboard/scripts/` folder
+- Updated [benchmark-dashboard/index.html](../benchmark-dashboard/index.html:104-115) to load modules from scripts folder in dependency order
 - Created backup of original file before modularization
 
 ---
@@ -492,23 +492,23 @@ npm run bench:list
 ### Files Created
 
 ```
-dashboard/                              (new directory)
-dashboard/index.html                    (created - 118 lines)
-dashboard/styles.css                    (created - 538 lines)
-dashboard/DASHBOARD_README.md           (created - 222 lines)
-dashboard/scripts/                      (new directory)
-dashboard/scripts/state.js              (created - 11 lines)
-dashboard/scripts/utils.js              (created - 18 lines)
-dashboard/scripts/theme.js              (created - 35 lines)
-dashboard/scripts/help.js               (created - 287 lines)
-dashboard/scripts/data-loader.js        (created - 44 lines)
-dashboard/scripts/charts.js             (created - 168 lines)
-dashboard/scripts/results.js            (created - 37 lines)
-dashboard/scripts/details-table.js      (created - 111 lines)
-dashboard/scripts/export.js             (created - 35 lines)
-dashboard/scripts/ui-manager.js         (created - 21 lines)
-dashboard/scripts/script.js             (created - 14 lines)
-dashboard/scripts/MODULES.md            (created - 104 lines)
+benchmark-dashboard/                              (new directory)
+benchmark-dashboard/index.html                    (created - 118 lines)
+benchmark-dashboard/styles.css                    (created - 538 lines)
+benchmark-dashboard/DASHBOARD_README.md           (created - 222 lines)
+benchmark-dashboard/scripts/                      (new directory)
+benchmark-dashboard/scripts/state.js              (created - 11 lines)
+benchmark-dashboard/scripts/utils.js              (created - 18 lines)
+benchmark-dashboard/scripts/theme.js              (created - 35 lines)
+benchmark-dashboard/scripts/help.js               (created - 287 lines)
+benchmark-dashboard/scripts/data-loader.js        (created - 44 lines)
+benchmark-dashboard/scripts/charts.js             (created - 168 lines)
+benchmark-dashboard/scripts/results.js            (created - 37 lines)
+benchmark-dashboard/scripts/details-table.js      (created - 111 lines)
+benchmark-dashboard/scripts/export.js             (created - 35 lines)
+benchmark-dashboard/scripts/ui-manager.js         (created - 21 lines)
+benchmark-dashboard/scripts/script.js             (created - 14 lines)
+benchmark-dashboard/scripts/MODULES.md            (created - 104 lines)
 logbook/CONVERSATION_LOGBOOK.md         (created - this file)
 ```
 
@@ -558,7 +558,7 @@ CONVERSATION_LOGBOOK.md                 (deleted from root - moved to logbook/)
 - **User Feedback:** "Revert all changes. I just want performance over time"
 - **Root Cause:** User realized simpler was better after seeing implementation
 - **Resolution:** Cleanly reverted all 4 visualizations:
-  - Removed HTML sections for bar-chart, box-plot, heatmap, histogram from [dashboard/index.html](../dashboard/index.html)
+  - Removed HTML sections for bar-chart, box-plot, heatmap, histogram from [benchmark-dashboard/index.html](../benchmark-dashboard/index.html)
   - Restored original "Performance Trends" section
   - Removed global chart variables (barChart, boxPlotChart, heatmapChart, histogramChart)
   - Deleted ~450 lines of chart functions from script.js
@@ -592,7 +592,7 @@ CONVERSATION_LOGBOOK.md                 (deleted from root - moved to logbook/)
 - **Decision:** Dual-filter system (benchmark type + file/date) with AND logic
 - **Rationale:** Allows users to narrow down results by multiple criteria
 - **Features:** Dynamically populated from loaded data, "Clear Filters" button for easy reset
-- **Location:** [dashboard/scripts/details-table.js](../dashboard/scripts/details-table.js:65-110)
+- **Location:** [benchmark-dashboard/scripts/details-table.js](../benchmark-dashboard/scripts/details-table.js:65-110)
 
 **3. Visualization Approach**
 - **Decision:** Keep only Performance Trends line chart after user feedback
@@ -751,7 +751,7 @@ npx playwright show-report
 npm run bench
 
 # View benchmark dashboard
-open dashboard/index.html
+open benchmark-dashboard/index.html
 # Then: Select benchmark JSON files from benchmarks/results/
 
 # Run specific benchmarks
