@@ -16,6 +16,20 @@ Create a comprehensive QA session summary following this structure:
 - Branch name (if applicable)
 - Status (Complete/In Progress/Blocked)
 
+## Resource Usage
+- **Model Used**: [e.g., Claude Sonnet 4.5, Claude Opus 4.5]
+- **Input Tokens**: [number]
+- **Output Tokens**: [number]
+- **Total Tokens**: [sum]
+- **Estimated Cost**: $[calculated cost]
+  - Input: [tokens] × $[rate per million] = $[amount]
+  - Output: [tokens] × $[rate per million] = $[amount]
+
+_Pricing reference (as of 2025):_
+- _Sonnet 4.5: $3/M input, $15/M output_
+- _Opus 4.5: $15/M input, $75/M output_
+- _Haiku 4: $0.80/M input, $4/M output_
+
 ## Objective
 Clear statement of what needed to be accomplished this session
 
@@ -149,11 +163,39 @@ Context:
 - Tests results: [pass/fail metrics]
 - Issues found/fixed: [list issues]
 - Duration: [estimated time]
+- Token usage: [input/output tokens if available]
 
 Use the QA engineering format with:
 - Clear objective
+- Resource usage (tokens and cost)
 - Test results table
 - Issues with root cause and verification
 - Technical decisions explained
 - Evidence-based validation
+```
+
+---
+
+## How to Find Token Usage
+
+**In Claude Code CLI:**
+- Token usage appears at the bottom of each response
+- Format: `Token usage: X input / Y output`
+- Check your terminal history or session logs
+
+**Calculating Costs:**
+```javascript
+// Example calculation for Sonnet 4.5
+const inputTokens = 45000;
+const outputTokens = 12000;
+
+const inputCost = (inputTokens / 1000000) * 3;   // $0.135
+const outputCost = (outputTokens / 1000000) * 15; // $0.180
+const totalCost = inputCost + outputCost;         // $0.315
+```
+
+**Quick Reference:**
+- 10,000 tokens ≈ $0.03 input + $0.15 output (Sonnet 4.5)
+- 100,000 tokens ≈ $0.30 input + $1.50 output (Sonnet 4.5)
+- 1,000,000 tokens = $3 input + $15 output (Sonnet 4.5)
 ```
